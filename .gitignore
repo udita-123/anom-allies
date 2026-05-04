@@ -1,0 +1,10 @@
+.venv/
+.venv-1/
+.venv-2/
+venv/
+__pycache__/
+*.pt
+*.tar.gz
+UCSD_Anomaly_Dataset.v1p2/
+data/raw/
+.env
