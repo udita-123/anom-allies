@@ -1,0 +1,90 @@
+{
+  "dataset": "ucsd_ped2",
+  "results": {
+    "baseline_random": {
+      "auc": 0.516,
+      "pr_auc": 0.8344,
+      "far": 0.4943
+    },
+    "baseline_always_anomaly": {
+      "auc": 0.5,
+      "pr_auc": 0.8279,
+      "far": 1.0
+    },
+    "baseline_frame_diff": {
+      "auc": 0.6672,
+      "pr_auc": 0.8986,
+      "far": 0.0086
+    },
+    "conv_ae_only": {
+      "auc": 0.6055,
+      "pr_auc": 0.8858,
+      "far": 0.4914,
+      "weights": {
+        "visual_ae": 1.0,
+        "lstm_ae": 0.0,
+        "lingering": 0.0
+      }
+    },
+    "lstm_ae_only": {
+      "auc": 0.4826,
+      "pr_auc": 0.8355,
+      "far": 0.0029,
+      "weights": {
+        "visual_ae": 0.0,
+        "lstm_ae": 1.0,
+        "lingering": 0.0
+      }
+    },
+    "lingering_only": {
+      "auc": 0.2724,
+      "pr_auc": 0.7374,
+      "far": 0.9943,
+      "weights": {
+        "visual_ae": 0.0,
+        "lstm_ae": 0.0,
+        "lingering": 1.0
+      }
+    },
+    "conv_ae_lstm": {
+      "auc": 0.6103,
+      "pr_auc": 0.8848,
+      "far": 0.0029,
+      "weights": {
+        "visual_ae": 0.6,
+        "lstm_ae": 0.4,
+        "lingering": 0.0
+      }
+    },
+    "conv_ae_lingering": {
+      "auc": 0.5562,
+      "pr_auc": 0.864,
+      "far": 0.6351,
+      "weights": {
+        "visual_ae": 0.7,
+        "lstm_ae": 0.0,
+        "lingering": 0.3
+      }
+    },
+    "lstm_lingering": {
+      "auc": 0.3387,
+      "pr_auc": 0.7864,
+      "far": 0.0029,
+      "weights": {
+        "visual_ae": 0.0,
+        "lstm_ae": 0.7,
+        "lingering": 0.3
+      }
+    },
+    "full_fusion": {
+      "auc": 0.5626,
+      "pr_auc": 0.8639,
+      "far": 0.2241,
+      "weights": {
+        "visual_ae": 0.5,
+        "lstm_ae": 0.3,
+        "lingering": 0.2
+      }
+    }
+  }
+}

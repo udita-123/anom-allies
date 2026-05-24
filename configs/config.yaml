@@ -1,0 +1,128 @@
+# ============================================================
+#  Robust Subtle Behaviour Detection — Master Config
+# ============================================================
+
+project:
+  name: "CCTV-SubtleBehaviour"
+  seed: 42
+  device: "cuda"          # "cuda" | "cpu"
+  output_dir: "outputs/"
+
+# ── Datasets ─────────────────────────────────────────────────
+datasets:
+  root: "data/raw/"
+  supported:
+    - ucsd_ped1
+    - ucsd_ped2
+    - avenue
+    - shanghaitech
+  frame_ext: ".jpg"
+  resize: [256, 256]       # H x W fed to autoencoder
+  fps_extract: 10          # frames per second to extract
+
+# ── Degradation (simulated CCTV) ─────────────────────────────
+degradation:
+  enabled: true
+  types:
+    motion_blur:
+      kernel_size: 15
+      angle: 45
+    gaussian_noise:
+      mean: 0
+      std: 25
+    low_light:
+      gamma: 2.5           # >1 darkens image
+    compression:
+      quality: 15          # JPEG quality 1-100 (low = worse)
+  apply_prob: 0.5          # probability to apply each degradation per frame (eval only)
+
+# ── YOLOv8 Person Detector ────────────────────────────────────
+detector:
+  model: "yolov8n.pt"      # nano for speed; swap to yolov8m for accuracy
+  conf_threshold: 0.35
+  iou_threshold: 0.45
+  classes: [0]             # COCO class 0 = person
+  img_size: 640
+
+# ── DeepSORT Tracker ─────────────────────────────────────────
+tracker:
+  max_age: 30              # frames before track is deleted
+  n_init: 3                # frames before track is confirmed
+  max_iou_distance: 0.7
+  max_cosine_distance: 0.3
+  nn_budget: 100
+  min_trajectory_length: 15  # discard short tracks
+
+# ── Feature Construction ─────────────────────────────────────
+features:
+  window_size: 30          # frames per feature window
+  stride: 10
+  speed_smooth_k: 5        # rolling mean kernel size
+  confinement_grid: [10, 10]  # grid cells for spatial confinement
+  direction_bins: 8        # compass directions for entropy
+
+# ── Convolutional Autoencoder ────────────────────────────────
+conv_ae:
+  latent_dim: 512
+  epochs: 50
+  batch_size: 32
+  lr: 1.0e-4
+  weight_decay: 1.0e-5
+  scheduler: "cosine"
+  threshold_percentile: 95  # on training reconstruction errors
+
+# ── LSTM Sequence Autoencoder ────────────────────────────────
+lstm_ae:
+  input_dim: 2             # speed, dx, dy, dir_entropy, confinement, persistence, bbox_area
+  hidden_dim: 64
+  num_layers: 2
+  dropout: 0.2
+  seq_len: 12
+  epochs: 25
+  batch_size: 64
+  lr: 5.0e-4
+  threshold_percentile: 95
+
+# ── Lingering Score ──────────────────────────────────────────
+lingering:
+  speed_threshold: 0.8     # px/frame — below = "slow"
+  confinement_threshold: 0.25  # fraction of frame area
+  min_duration_frames: 60  # ~6 sec at 10fps
+  weights:
+    speed_inv: 0.4         # inverted speed contribution
+    confinement: 0.4       # spatial confinement
+    duration: 0.2          # temporal persistence
+
+# ── Multi-Factor Fusion ──────────────────────────────────────
+fusion:
+  weights:
+    visual_ae: 0.30
+    lstm_ae:   0.35
+    lingering: 0.35
+  anomaly_threshold: 0.65  # final score [0,1] above = alert
+
+# ── Evaluation ───────────────────────────────────────────────
+evaluation:
+  metrics:
+    - roc_auc
+    - pr_auc
+    - false_alarm_rate
+    - detection_delay
+  conditions:
+    - clean
+    - motion_blur
+    - gaussian_noise
+    - low_light
+    - compression
+    - all_combined
+  save_curves: true
+
+# ── Dashboard ────────────────────────────────────────────────
+dashboard:
+  host: "0.0.0.0"
+  port: 8501
+  history_window: 300      # frames shown in trajectory plot
+  alert_labels:
+    high:   "⚠️ Possible Loitering"
+    medium: "🔍 Irregular Movement"
+    low:    "✅ Normal Behaviour"

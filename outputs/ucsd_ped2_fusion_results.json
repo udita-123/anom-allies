@@ -1,0 +1,122 @@
+[
+  {
+    "video_name": "Test001",
+    "anomaly_score": 0.1791,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.18)",
+    "visual_score": 0.0035,
+    "lstm_score": 0.0035,
+    "ling_score": 0.5051
+  },
+  {
+    "video_name": "Test002",
+    "anomaly_score": 0.1859,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.19)",
+    "visual_score": 0.0025,
+    "lstm_score": 0.003,
+    "ling_score": 0.526
+  },
+  {
+    "video_name": "Test003",
+    "anomaly_score": 0.1783,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.18)",
+    "visual_score": 0.0035,
+    "lstm_score": 0.0033,
+    "ling_score": 0.5031
+  },
+  {
+    "video_name": "Test004",
+    "anomaly_score": 0.1887,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.19)",
+    "visual_score": 0.0037,
+    "lstm_score": 0.0025,
+    "ling_score": 0.5335
+  },
+  {
+    "video_name": "Test005",
+    "anomaly_score": 0.1659,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.17)",
+    "visual_score": 0.0039,
+    "lstm_score": 0.0031,
+    "ling_score": 0.4676
+  },
+  {
+    "video_name": "Test006",
+    "anomaly_score": 0.176,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.18)",
+    "visual_score": 0.0027,
+    "lstm_score": 0.0025,
+    "ling_score": 0.498
+  },
+  {
+    "video_name": "Test007",
+    "anomaly_score": 0.1768,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.18)",
+    "visual_score": 0.0031,
+    "lstm_score": 0.0029,
+    "ling_score": 0.4995
+  },
+  {
+    "video_name": "Test008",
+    "anomaly_score": 0.1789,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.18)",
+    "visual_score": 0.0029,
+    "lstm_score": 0.0024,
+    "ling_score": 0.5063
+  },
+  {
+    "video_name": "Test009",
+    "anomaly_score": 0.1638,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.16)",
+    "visual_score": 0.0027,
+    "lstm_score": 0.0043,
+    "ling_score": 0.4616
+  },
+  {
+    "video_name": "Test010",
+    "anomaly_score": 0.1766,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.18)",
+    "visual_score": 0.0021,
+    "lstm_score": 0.0029,
+    "ling_score": 0.4999
+  },
+  {
+    "video_name": "Test011",
+    "anomaly_score": 0.1609,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.16)",
+    "visual_score": 0.0038,
+    "lstm_score": 0.0037,
+    "ling_score": 0.4527
+  },
+  {
+    "video_name": "Test012",
+    "anomaly_score": 0.175,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.18)",
+    "visual_score": 0.0035,
+    "lstm_score": 0.002,
+    "ling_score": 0.495
+  }
+]

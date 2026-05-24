@@ -1,0 +1,362 @@
+[
+  {
+    "video_name": "Test001",
+    "anomaly_score": 0.1492,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.15)",
+    "visual_score": 0.0049,
+    "lstm_score": 0.0012,
+    "ling_score": 0.4209
+  },
+  {
+    "video_name": "Test002",
+    "anomaly_score": 0.1513,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.15)",
+    "visual_score": 0.0031,
+    "lstm_score": 0.0016,
+    "ling_score": 0.4281
+  },
+  {
+    "video_name": "Test003",
+    "anomaly_score": 0.1468,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.15)",
+    "visual_score": 0.0068,
+    "lstm_score": 0.0011,
+    "ling_score": 0.4125
+  },
+  {
+    "video_name": "Test004",
+    "anomaly_score": 0.1449,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.14)",
+    "visual_score": 0.0051,
+    "lstm_score": 0.0009,
+    "ling_score": 0.4087
+  },
+  {
+    "video_name": "Test005",
+    "anomaly_score": 0.1409,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.14)",
+    "visual_score": 0.0055,
+    "lstm_score": 0.0013,
+    "ling_score": 0.3965
+  },
+  {
+    "video_name": "Test006",
+    "anomaly_score": 0.1474,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.15)",
+    "visual_score": 0.0054,
+    "lstm_score": 0.0012,
+    "ling_score": 0.4152
+  },
+  {
+    "video_name": "Test007",
+    "anomaly_score": 0.133,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.13)",
+    "visual_score": 0.0051,
+    "lstm_score": 0.001,
+    "ling_score": 0.3747
+  },
+  {
+    "video_name": "Test008",
+    "anomaly_score": 0.1546,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.15)",
+    "visual_score": 0.005,
+    "lstm_score": 0.0013,
+    "ling_score": 0.436
+  },
+  {
+    "video_name": "Test009",
+    "anomaly_score": 0.1563,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.16)",
+    "visual_score": 0.0054,
+    "lstm_score": 0.0015,
+    "ling_score": 0.4406
+  },
+  {
+    "video_name": "Test010",
+    "anomaly_score": 0.1527,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.15)",
+    "visual_score": 0.0041,
+    "lstm_score": 0.0012,
+    "ling_score": 0.4316
+  },
+  {
+    "video_name": "Test011",
+    "anomaly_score": 0.1546,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.15)",
+    "visual_score": 0.0036,
+    "lstm_score": 0.0016,
+    "ling_score": 0.4369
+  },
+  {
+    "video_name": "Test012",
+    "anomaly_score": 0.1638,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.16)",
+    "visual_score": 0.0047,
+    "lstm_score": 0.0016,
+    "ling_score": 0.4625
+  },
+  {
+    "video_name": "Test013",
+    "anomaly_score": 0.1552,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.16)",
+    "visual_score": 0.0058,
+    "lstm_score": 0.0009,
+    "ling_score": 0.4375
+  },
+  {
+    "video_name": "Test014",
+    "anomaly_score": 0.159,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.16)",
+    "visual_score": 0.0055,
+    "lstm_score": 0.0012,
+    "ling_score": 0.4485
+  },
+  {
+    "video_name": "Test015",
+    "anomaly_score": 0.1517,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.15)",
+    "visual_score": 0.002,
+    "lstm_score": 0.0007,
+    "ling_score": 0.4312
+  },
+  {
+    "video_name": "Test016",
+    "anomaly_score": 0.1687,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.17)",
+    "visual_score": 0.0032,
+    "lstm_score": 0.0006,
+    "ling_score": 0.4786
+  },
+  {
+    "video_name": "Test017",
+    "anomaly_score": 0.1652,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.17)",
+    "visual_score": 0.0037,
+    "lstm_score": 0.0015,
+    "ling_score": 0.4673
+  },
+  {
+    "video_name": "Test018",
+    "anomaly_score": 0.1473,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.15)",
+    "visual_score": 0.0058,
+    "lstm_score": 0.0015,
+    "ling_score": 0.4142
+  },
+  {
+    "video_name": "Test019",
+    "anomaly_score": 0.1753,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.18)",
+    "visual_score": 0.0031,
+    "lstm_score": 0.0013,
+    "ling_score": 0.497
+  },
+  {
+    "video_name": "Test020",
+    "anomaly_score": 0.1869,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.19)",
+    "visual_score": 0.0023,
+    "lstm_score": 0.0011,
+    "ling_score": 0.5309
+  },
+  {
+    "video_name": "Test021",
+    "anomaly_score": 0.18,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.18)",
+    "visual_score": 0.003,
+    "lstm_score": 0.0008,
+    "ling_score": 0.5108
+  },
+  {
+    "video_name": "Test022",
+    "anomaly_score": 0.1713,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.17)",
+    "visual_score": 0.003,
+    "lstm_score": 0.0007,
+    "ling_score": 0.4862
+  },
+  {
+    "video_name": "Test023",
+    "anomaly_score": 0.1723,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.17)",
+    "visual_score": 0.0031,
+    "lstm_score": 0.0016,
+    "ling_score": 0.488
+  },
+  {
+    "video_name": "Test024",
+    "anomaly_score": 0.1692,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.17)",
+    "visual_score": 0.0049,
+    "lstm_score": 0.0017,
+    "ling_score": 0.4776
+  },
+  {
+    "video_name": "Test025",
+    "anomaly_score": 0.1436,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.14)",
+    "visual_score": 0.0018,
+    "lstm_score": 0.0005,
+    "ling_score": 0.4082
+  },
+  {
+    "video_name": "Test026",
+    "anomaly_score": 0.1441,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.14)",
+    "visual_score": 0.0026,
+    "lstm_score": 0.0003,
+    "ling_score": 0.4093
+  },
+  {
+    "video_name": "Test027",
+    "anomaly_score": 0.1532,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.15)",
+    "visual_score": 0.004,
+    "lstm_score": 0.0006,
+    "ling_score": 0.4338
+  },
+  {
+    "video_name": "Test028",
+    "anomaly_score": 0.1711,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.17)",
+    "visual_score": 0.0016,
+    "lstm_score": 0.0008,
+    "ling_score": 0.4867
+  },
+  {
+    "video_name": "Test029",
+    "anomaly_score": 0.1409,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.14)",
+    "visual_score": 0.0014,
+    "lstm_score": 0.0002,
+    "ling_score": 0.4012
+  },
+  {
+    "video_name": "Test030",
+    "anomaly_score": 0.1486,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.15)",
+    "visual_score": 0.0016,
+    "lstm_score": 0.0012,
+    "ling_score": 0.4219
+  },
+  {
+    "video_name": "Test031",
+    "anomaly_score": 0.134,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.13)",
+    "visual_score": 0.0033,
+    "lstm_score": 0.0005,
+    "ling_score": 0.3796
+  },
+  {
+    "video_name": "Test032",
+    "anomaly_score": 0.1356,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.14)",
+    "visual_score": 0.0028,
+    "lstm_score": 0.0003,
+    "ling_score": 0.3847
+  },
+  {
+    "video_name": "Test033",
+    "anomaly_score": 0.1357,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.14)",
+    "visual_score": 0.0031,
+    "lstm_score": 0.0005,
+    "ling_score": 0.3845
+  },
+  {
+    "video_name": "Test034",
+    "anomaly_score": 0.1707,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.17)",
+    "visual_score": 0.003,
+    "lstm_score": 0.0013,
+    "ling_score": 0.484
+  },
+  {
+    "video_name": "Test035",
+    "anomaly_score": 0.1663,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.17)",
+    "visual_score": 0.0023,
+    "lstm_score": 0.0005,
+    "ling_score": 0.4726
+  },
+  {
+    "video_name": "Test036",
+    "anomaly_score": 0.1778,
+    "is_anomalous": false,
+    "alert_tier": "low",
+    "explanation": "Normal behaviour (score=0.18)",
+    "visual_score": 0.0035,
+    "lstm_score": 0.0012,
+    "ling_score": 0.5038
+  }
+]

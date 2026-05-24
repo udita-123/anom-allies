@@ -1,0 +1,72 @@
+{
+  "results": [
+    {
+      "condition": "clean",
+      "roc_auc": 0.6949,
+      "pr_auc": 0.9102,
+      "false_alarm_rate": 0.0,
+      "detection_delay": NaN,
+      "n_samples": 2022,
+      "threshold_used": 0.007655
+    },
+    {
+      "condition": "motion_blur",
+      "roc_auc": 0.6924,
+      "pr_auc": 0.9029,
+      "false_alarm_rate": 0.0,
+      "detection_delay": NaN,
+      "n_samples": 2022,
+      "threshold_used": 0.007655
+    },
+    {
+      "condition": "gaussian_noise",
+      "roc_auc": 0.6966,
+      "pr_auc": 0.9117,
+      "false_alarm_rate": 0.0,
+      "detection_delay": NaN,
+      "n_samples": 2022,
+      "threshold_used": 0.0095
+    },
+    {
+      "condition": "low_light",
+      "roc_auc": 0.5634,
+      "pr_auc": 0.8455,
+      "false_alarm_rate": 0.0,
+      "detection_delay": NaN,
+      "n_samples": 2022,
+      "threshold_used": 0.13651
+    },
+    {
+      "condition": "compression",
+      "roc_auc": 0.6937,
+      "pr_auc": 0.9094,
+      "false_alarm_rate": 0.0,
+      "detection_delay": NaN,
+      "n_samples": 2022,
+      "threshold_used": 0.007655
+    },
+    {
+      "condition": "all_combined",
+      "roc_auc": 0.5304,
+      "pr_auc": 0.8243,
+      "false_alarm_rate": 0.0,
+      "detection_delay": NaN,
+      "n_samples": 2022,
+      "threshold_used": 0.13562
+    }
+  ],
+  "summary": {
+    "best_auc_condition": "gaussian_noise",
+    "worst_auc_condition": "all_combined",
+    "mean_roc_auc": 0.6452,
+    "mean_pr_auc": 0.884,
+    "per_condition_thresholds": {
+      "clean": 0.007655,
+      "motion_blur": 0.007655,
+      "compression": 0.007655,
+      "gaussian_noise": 0.0095,
+      "low_light": 0.13651,
+      "all_combined": 0.13562
+    }
+  }
+}

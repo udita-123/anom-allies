@@ -8,3 +8,4 @@ __pycache__/
 UCSD_Anomaly_Dataset.v1p2/
 data/raw/
 .env
+data/
