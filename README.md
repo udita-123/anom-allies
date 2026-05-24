@@ -71,6 +71,8 @@ cctv_behaviour/
 │
 ├── pipeline.py                  ← Master orchestrator (train / eval / infer)
 └── requirements.txt
+```
+
 ---
 
 ## Quick Start
@@ -103,8 +105,18 @@ streamlit run dashboard/app.py
 
 ## Pipeline Steps
 
-Pipeline Steps
-StepFilePurpose1. Data Preputils/helpers.pyFrame extraction, degradation2. Detectiondetection/__init__.pyYOLOv8 person detection3. Trackingtracking/tracker.pyDeepSORT + Trajectory building4. Featuresfeatures/extractor.pySpeed, direction, confinement windows5. Visual AEmodels/autoencoder/conv_ae.pyConv autoencoder, per-frame score6. LSTM AEmodels/lstm_ae/lstm_ae.pySequence autoencoder, per-track score7. Lingeringfeatures/lingering_score.py★ Novel domain heuristic8. Fusionmodels/fusion.pyWeighted combination → final score9. Evaluationevaluation/evaluator.pyRobustness metrics10. Dashboarddashboard/app.pyStreamlit visualisation
+| Step | File | Purpose |
+|------|------|---------|
+| 1. Data Prep | `utils/helpers.py` | Frame extraction, degradation |
+| 2. Detection | `detection/__init__.py` | YOLOv8 person detection |
+| 3. Tracking | `tracking/tracker.py` | DeepSORT + Trajectory building |
+| 4. Features | `features/extractor.py` | Speed, direction, confinement windows |
+| 5. Visual AE | `models/autoencoder/conv_ae.py` | Conv autoencoder, per-frame score |
+| 6. LSTM AE | `models/lstm_ae/lstm_ae.py` | Sequence autoencoder, per-track score |
+| 7. Lingering | `features/lingering_score.py` | ★ Novel domain heuristic |
+| 8. Fusion | `models/fusion.py` | Weighted combination → final score |
+| 9. Evaluation | `evaluation/evaluator.py` | Robustness metrics |
+| 10. Dashboard | `dashboard/app.py` | Streamlit visualisation |
 
 ---
 
