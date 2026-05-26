@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCTV Behavioural Anomaly Detection</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#0d0f14;--bg2:#13161e;--bg3:#1a1e28;
+  --border:#232838;--border2:#2e3447;
+  --text:#e8ecf4;--text-dim:#6b7899;--text-dimmer:#3d4560;
+  --accent:#f7c948;--accent2:#4f8ef7;--accent3:#e05c7a;--accent4:#3ecf8e;
+  --card:#161922;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;}
+.sidebar{width:220px;min-width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:22px 14px 14px;gap:4px;overflow-y:auto;}
+.logo{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:var(--accent);letter-spacing:0.12em;text-transform:uppercase;padding:0 8px 16px;border-bottom:1px solid var(--border);margin-bottom:8px;line-height:1.7;}
+.logo span{display:block;color:var(--text-dim);font-weight:400;font-size:9px;margin-top:2px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text-dim);transition:all 0.15s;border:1px solid transparent;}
+.nav-item:hover{background:var(--bg3);color:var(--text);}
+.nav-item.active{background:rgba(247,201,72,0.08);color:var(--accent);border-color:rgba(247,201,72,0.15);}
+.nav-icon{font-size:14px;width:18px;text-align:center;}
+.nav-sep{height:1px;background:var(--border);margin:8px 0;}
+.ctrl{padding:8px 6px;}
+.ctrl-label{font-size:10px;font-weight:600;color:var(--text-dimmer);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:7px;}
+select{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;padding:7px 10px;border-radius:6px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b7899'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;}
+select:focus{outline:none;border-color:var(--accent);}
+select option{background:#1a1e28;}
+.slider-row{display:flex;justify-content:space-between;margin-bottom:6px;}
+.slider-val{font-family:'Space Mono',monospace;font-size:11px;color:var(--accent);}
+input[type=range]{width:100%;-webkit-appearance:none;height:3px;background:var(--border2);border-radius:2px;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--accent);}
+.sidebar-footer{margin-top:auto;padding:10px 8px 0;border-top:1px solid var(--border);font-family:'Space Mono',monospace;font-size:9px;color:var(--text-dimmer);line-height:2;}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent4);margin-right:5px;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.main{flex:1;overflow-y:auto;padding:26px 30px;}
+.main::-webkit-scrollbar{width:4px;}
+.main::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+.view{display:none;} .view.active{display:block;}
+.ph{margin-bottom:22px;}
+.ph-title{font-size:19px;font-weight:700;color:var(--text);letter-spacing:-0.02em;}
+.ph-sub{font-size:12px;color:var(--text-dim);margin-top:3px;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden;}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.stat:nth-child(1)::before{background:var(--accent2);}
+.stat:nth-child(2)::before{background:var(--accent3);}
+.stat:nth-child(3)::before{background:var(--accent);}
+.stat:nth-child(4)::before{background:var(--accent4);}
+.stat-lbl{font-size:10px;font-weight:600;color:var(--text-dimmer);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px;}
+.stat-val{font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:var(--text);}
+.stat-sub{font-size:11px;color:var(--text-dim);margin-top:3px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:16px;}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.ct{font-size:13px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px;}
+.cbadge{font-family:'Space Mono',monospace;font-size:9px;padding:3px 8px;border-radius:4px;background:rgba(79,142,247,0.1);color:var(--accent2);border:1px solid rgba(79,142,247,0.2);}
+.cw{position:relative;}
+.tw{overflow-x:auto;border-radius:7px;border:1px solid var(--border);}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+thead tr{background:var(--bg3);}
+th{padding:9px 13px;text-align:left;font-size:10px;font-weight:600;color:var(--text-dimmer);letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid var(--border);}
+td{padding:8px 13px;color:var(--text);border-bottom:1px solid var(--border);font-family:'Space Mono',monospace;font-size:11px;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--bg3);}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;}
+.bh{background:rgba(224,92,122,0.12);color:var(--accent3);border:1px solid rgba(224,92,122,0.2);}
+.bm{background:rgba(247,201,72,0.1);color:var(--accent);border:1px solid rgba(247,201,72,0.2);}
+.bl{background:rgba(62,207,142,0.1);color:var(--accent4);border:1px solid rgba(62,207,142,0.2);}
+.pills{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px;}
+.pill{padding:5px 13px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border2);color:var(--text-dim);background:var(--bg3);transition:all 0.15s;font-family:'Space Mono',monospace;}
+.pill:hover{border-color:var(--accent2);color:var(--text);}
+.pill.active{background:rgba(79,142,247,0.12);border-color:var(--accent2);color:var(--accent2);}
+.dp{color:var(--accent4);font-family:'Space Mono',monospace;font-size:11px;}
+.dn{color:var(--accent3);font-family:'Space Mono',monospace;font-size:11px;}
+.dz{color:var(--text-dim);font-family:'Space Mono',monospace;font-size:11px;}
+.export-btn{display:flex;align-items:center;gap:8px;margin-top:auto;padding:9px 12px;border-radius:7px;cursor:pointer;font-size:12px;font-weight:600;color:#0d0f14;background:var(--accent);border:none;width:100%;justify-content:center;font-family:'DM Sans',sans-serif;transition:opacity 0.15s;}
+.export-btn:hover{opacity:0.85;}
+.export-btn:disabled{opacity:0.5;cursor:not-allowed;}
+.export-spinner{display:none;width:12px;height:12px;border:2px solid rgba(0,0,0,0.2);border-top-color:#000;border-radius:50%;animation:spin 0.7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo">CCTV · ANOMALY<span>Behavioural Detection System</span></div>
+  <div class="nav-item active" onclick="nav('overview',this)"><span class="nav-icon">⬡</span> Overview</div>
+  <div class="nav-item" onclick="nav('robustness',this)"><span class="nav-icon">◈</span> Robustness</div>
+  <div class="nav-item" onclick="nav('clips',this)"><span class="nav-icon">▦</span> Clip Scores</div>
+  <div class="nav-item" onclick="nav('trajectory',this)"><span class="nav-icon">◎</span> Trajectories</div>
+  <div class="nav-item" onclick="nav('timeline',this)"><span class="nav-icon">≋</span> Timeline</div>
+  <div class="nav-sep"></div>
+  <div class="ctrl">
+    <div class="ctrl-label">Dataset</div>
+    <select id="dsSel" onchange="state.dataset=this.value;renderAll()">
+      <option value="ped2">UCSD Ped2</option>
+      <option value="ped1">UCSD Ped1</option>
+    </select>
+  </div>
+  <div class="ctrl">
+    <div class="ctrl-label">Condition</div>
+    <select id="condSel" onchange="state.condition=this.value;renderAll()">
+      <option value="clean">Clean</option>
+      <option value="motion_blur">Motion Blur</option>
+      <option value="gaussian_noise">Gaussian Noise</option>
+      <option value="low_light">Low Light</option>
+      <option value="compression">Compression</option>
+      <option value="all_combined">All Combined</option>
+    </select>
+  </div>
+  <div class="ctrl">
+    <div class="ctrl-label">Person ID</div>
+    <select id="pidSel" onchange="state.person=parseInt(this.value);renderAll()">
+    </select>
+  </div>
+  <div class="ctrl">
+    <div class="ctrl-label">Alert Threshold</div>
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:7px;">
+      <input type="number" id="thrInput" min="0" max="1" step="0.01" value="0.65"
+        style="width:64px;background:var(--bg3);border:1px solid var(--border2);color:var(--accent);font-family:'Space Mono',monospace;font-size:13px;font-weight:700;padding:5px 8px;border-radius:5px;outline:none;-moz-appearance:textfield;"
+        oninput="syncThreshold(this.value,'input')">
+      <span style="font-size:10px;color:var(--text-dimmer);flex:1">0 – 1</span>
+    </div>
+    <input type="range" id="thrSlider" min="0" max="1" step="0.01" value="0.65"
+      oninput="syncThreshold(this.value,'slider')">
+    <div style="display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;">
+      <span data-val="0.50" class="thr-preset" onclick="syncThreshold('0.50','preset')" style="padding:3px 7px;border-radius:4px;background:var(--bg3);border:1px solid var(--border2);font-family:'Space Mono',monospace;font-size:10px;color:var(--text-dim);cursor:pointer;" title="Low sensitivity">0.50</span>
+      <span data-val="0.65" class="thr-preset" onclick="syncThreshold('0.65','preset')" style="padding:3px 7px;border-radius:4px;background:var(--bg3);border:1px solid var(--border2);font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);cursor:pointer;border-color:var(--accent);" title="Default">0.65</span>
+      <span data-val="0.75" class="thr-preset" onclick="syncThreshold('0.75','preset')" style="padding:3px 7px;border-radius:4px;background:var(--bg3);border:1px solid var(--border2);font-family:'Space Mono',monospace;font-size:10px;color:var(--text-dim);cursor:pointer;" title="High confidence">0.75</span>
+      <span data-val="0.90" class="thr-preset" onclick="syncThreshold('0.90','preset')" style="padding:3px 7px;border-radius:4px;background:var(--bg3);border:1px solid var(--border2);font-family:'Space Mono',monospace;font-size:10px;color:var(--text-dim);cursor:pointer;" title="Very strict">0.90</span>
+    </div>
+  </div>
+  <div class="nav-sep"></div>
+  <button class="export-btn" id="exportBtn" onclick="exportPDF()">
+    <span class="export-spinner" id="exportSpinner"></span>
+    <span id="exportLabel">⬇ Export View as PDF</span>
+  </button>
+  <div class="sidebar-footer">
+    <div><span class="dot"></span>PIPELINE ACTIVE</div>
+    <div>YOLOv8n · DeepSORT</div>
+    <div>Conv-AE + LSTM-AE</div>
+    <div style="margin-top:5px">Ped2 thr · 0.002080</div>
+    <div>Ped1 thr · 0.003245</div>
+    <div>LSTM thr · 0.016360</div>
+    <div>Persons · 20 tracked</div>
+  </div>
+</aside>
+
+<main class="main">
+
+<div id="view-overview" class="view active">
+  <div class="ph"><div class="ph-title">System Overview</div><div class="ph-sub">Full pipeline results across both datasets and all degradation conditions</div></div>
+  <div class="stats" id="ovStats"></div>
+  <div class="g2">
+    <div class="card">
+      <div class="ch"><div class="ct">📊 AUC by Condition — Both Datasets</div><div class="cbadge">ROC-AUC</div></div>
+      <div class="cw" style="height:260px"><canvas id="ovBarChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">📉 Degradation Impact (ΔAUC vs Clean)</div><div class="cbadge">ROBUSTNESS</div></div>
+      <div class="cw" style="height:260px"><canvas id="deltaChart"></canvas></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ch"><div class="ct">🗂 Cross-Dataset Comparison</div><div class="cbadge">Ped1 vs Ped2</div></div>
+    <div class="tw"><table id="crossTable"></table></div>
+  </div>
+</div>
+
+<div id="view-robustness" class="view">
+  <div class="ph"><div class="ph-title">Robustness Evaluation</div><div class="ph-sub">Performance under 5 synthetic degradation conditions</div></div>
+  <div class="pills" id="condPills"></div>
+  <div class="stats" id="robStats"></div>
+  <div class="card">
+    <div class="ch"><div class="ct">◈ All-Condition Radar — <span id="robDsLbl">UCSD Ped2</span></div><div class="cbadge" id="robCondLbl">CLEAN</div></div>
+    <div class="cw" style="height:280px"><canvas id="radarChart"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="ch"><div class="ct">📋 Detailed Metrics</div></div>
+    <div class="tw"><table id="robTable"></table></div>
+  </div>
+</div>
+
+<div id="view-clips" class="view">
+  <div class="ph"><div class="ph-title">Per-Clip Fusion Scores</div><div class="ph-sub">LSTM + visual + lingering fusion score per test video clip</div></div>
+  <div class="card">
+    <div class="ch"><div class="ct">▦ Fusion Score per Test Clip</div><div class="cbadge" id="clipDsBadge">PED2</div></div>
+    <div class="cw" style="height:300px"><canvas id="clipChart"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="ch"><div class="ct">📋 Clip Detail Table</div></div>
+    <div class="tw"><table id="clipTable"></table></div>
+  </div>
+</div>
+
+<div id="view-trajectory" class="view">
+  <div class="ph"><div class="ph-title">Trajectory Analysis</div><div class="ph-sub">Spatial paths and anomaly score heatmap across all 20 tracked persons</div></div>
+  <div class="g2">
+    <div class="card">
+      <div class="ch"><div class="ct">🛤 XY Path — Person <span id="trajPid">1</span></div></div>
+      <div class="cw" style="height:240px"><canvas id="xyChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">📈 Y Position over Frames</div></div>
+      <div class="cw" style="height:240px"><canvas id="yChart"></canvas></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ch"><div class="ct">🔥 Anomaly Score Heatmap — 20 Persons × 10 Time Windows</div><div class="cbadge">TRAJECTORY</div></div>
+    <div id="hmContainer" style="padding:6px 0;overflow-x:auto"></div>
+  </div>
+</div>
+
+<div id="view-timeline" class="view">
+  <div class="ph"><div class="ph-title">Anomaly Timeline</div><div class="ph-sub">Frame-level anomaly score with alert threshold</div></div>
+  <div class="card">
+    <div class="ch"><div class="ct">≋ Score over Time — Person <span id="tlPid">1</span></div><div class="cbadge" id="tlThrBadge">THR 0.65</div></div>
+    <div class="cw" style="height:320px"><canvas id="tlChart"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="ch"><div class="ct">🚨 Detection Events</div></div>
+    <div class="tw"><table id="detTable"></table></div>
+  </div>
+</div>
+
+</main>
+
+<script>
+// ══ REAL PIPELINE RESULTS ══
+const R = {
+  ped2:{
+    label:'UCSD Ped2',frames:2022,anomaly:1648,
+    conds:{
+      clean:         {auc:0.6949,pr:0.9102,far:0.0000},
+      motion_blur:   {auc:0.6924,pr:0.9029,far:0.0000},
+      gaussian_noise:{auc:0.6966,pr:0.9117,far:0.0000},
+      low_light:     {auc:0.5634,pr:0.8455,far:0.0000},
+      compression:   {auc:0.6937,pr:0.9094,far:0.0000},
+      all_combined:  {auc:0.5304,pr:0.8243,far:0.0000},
+    },
+    clips:[
+      {id:'Test001',score:0.179,seqs:291},{id:'Test002',score:0.186,seqs:227},
+      {id:'Test003',score:0.178,seqs:228},{id:'Test004',score:0.189,seqs:161},
+      {id:'Test005',score:0.166,seqs:260},{id:'Test006',score:0.176,seqs:201},
+      {id:'Test007',score:0.177,seqs:183},{id:'Test008',score:0.179,seqs:190},
+      {id:'Test009',score:0.164,seqs:143},{id:'Test010',score:0.177,seqs:123},
+      {id:'Test011',score:0.161,seqs:314},{id:'Test012',score:0.175,seqs:304},
+    ]
+  },
+  ped1:{
+    label:'UCSD Ped1',frames:7200,anomaly:2000,
+    conds:{
+      clean:         {auc:0.6307,pr:0.4034,far:0.0050},
+      motion_blur:   {auc:0.6346,pr:0.4222,far:0.0000},
+      gaussian_noise:{auc:0.6312,pr:0.4038,far:0.0000},
+      low_light:     {auc:0.5187,pr:0.2873,far:0.0000},
+      compression:   {auc:0.6303,pr:0.4033,far:0.0056},
+      all_combined:  {auc:0.5105,pr:0.2777,far:0.0000},
+    },
+    clips:[
+      {id:'Test001',score:0.149,seqs:308},{id:'Test002',score:0.151,seqs:255},
+      {id:'Test003',score:0.147,seqs:406},{id:'Test004',score:0.145,seqs:310},
+      {id:'Test005',score:0.141,seqs:302},{id:'Test006',score:0.147,seqs:314},
+      {id:'Test007',score:0.133,seqs:331},{id:'Test008',score:0.155,seqs:355},
+      {id:'Test009',score:0.156,seqs:328},{id:'Test010',score:0.153,seqs:300},
+      {id:'Test011',score:0.155,seqs:250},{id:'Test012',score:0.164,seqs:283},
+      {id:'Test013',score:0.155,seqs:334},{id:'Test014',score:0.159,seqs:252},
+      {id:'Test015',score:0.152,seqs:142},{id:'Test016',score:0.169,seqs:182},
+      {id:'Test017',score:0.165,seqs:203},{id:'Test018',score:0.147,seqs:315},
+      {id:'Test019',score:0.175,seqs:157},{id:'Test020',score:0.187,seqs:96},
+      {id:'Test021',score:0.180,seqs:217},{id:'Test022',score:0.171,seqs:167},
+      {id:'Test023',score:0.172,seqs:189},{id:'Test024',score:0.169,seqs:224},
+      {id:'Test025',score:0.144,seqs:127},{id:'Test026',score:0.144,seqs:170},
+      {id:'Test027',score:0.153,seqs:210},{id:'Test028',score:0.171,seqs:117},
+      {id:'Test029',score:0.141,seqs:97}, {id:'Test030',score:0.149,seqs:98},
+      {id:'Test031',score:0.134,seqs:193},{id:'Test032',score:0.136,seqs:167},
+      {id:'Test033',score:0.136,seqs:196},{id:'Test034',score:0.171,seqs:182},
+      {id:'Test035',score:0.166,seqs:197},{id:'Test036',score:0.178,seqs:174},
+    ]
+  }
+};
+
+// ══ 20 PERSONS — mix of normal, loitering, pacing, wandering ══
+const P = {
+  1: {label:'Normal walker',     frames:[0,1,2,3,4,5,6,7,8,9],x:[100,104,108,112,116,120,124,128,132,136],y:[98,98,99,99,100,100,101,101,102,102],  scores:[0.08,0.09,0.10,0.09,0.11,0.10,0.09,0.08,0.10,0.09]},
+  2: {label:'Loiterer',          frames:[0,1,2,3,4,5,6,7,8,9],x:[60,61,60,62,61,60,61,62,60,61],            y:[120,120,121,120,121,120,120,121,120,121],scores:[0.45,0.55,0.72,0.81,0.88,0.91,0.89,0.84,0.87,0.92]},
+  3: {label:'Pacer',             frames:[0,1,2,3,4,5,6,7,8,9],x:[130,140,130,140,130,140,130,140,130,140],  y:[80,80,81,81,80,80,81,81,80,80],          scores:[0.38,0.42,0.78,0.82,0.79,0.83,0.80,0.85,0.81,0.88]},
+  4: {label:'Fast mover',        frames:[0,1,2,3,4,5,6,7,8,9],x:[50,65,80,95,110,125,140,155,170,185],      y:[50,52,54,56,58,60,62,64,66,68],          scores:[0.05,0.06,0.07,0.06,0.08,0.07,0.06,0.07,0.06,0.08]},
+  5: {label:'Wanderer',          frames:[0,1,2,3,4,5,6,7,8,9],x:[170,168,175,165,178,162,172,160,174,163],  y:[90,95,88,96,87,97,89,95,88,94],          scores:[0.50,0.58,0.75,0.83,0.88,0.79,0.84,0.91,0.86,0.93]},
+  6: {label:'Normal walker 2',   frames:[0,1,2,3,4,5,6,7,8,9],x:[200,205,210,215,220,225,230,235,240,245],  y:[60,60,61,61,62,62,63,63,64,64],          scores:[0.07,0.08,0.09,0.07,0.08,0.09,0.07,0.08,0.07,0.09]},
+  7: {label:'Slow wanderer',     frames:[0,1,2,3,4,5,6,7,8,9],x:[80,81,83,80,82,81,83,80,82,81],            y:[140,141,140,142,141,140,142,141,140,141], scores:[0.42,0.48,0.55,0.68,0.74,0.82,0.79,0.85,0.83,0.89]},
+  8: {label:'Normal walker 3',   frames:[0,1,2,3,4,5,6,7,8,9],x:[30,36,42,48,54,60,66,72,78,84],           y:[110,110,111,111,112,112,113,113,114,114],scores:[0.06,0.07,0.06,0.08,0.07,0.06,0.07,0.08,0.06,0.07]},
+  9: {label:'Aggressive pacer',  frames:[0,1,2,3,4,5,6,7,8,9],x:[150,165,150,165,150,165,150,165,150,165],  y:[70,70,72,72,70,70,72,72,70,70],          scores:[0.55,0.62,0.85,0.89,0.87,0.91,0.88,0.93,0.90,0.95]},
+  10:{label:'Normal runner',     frames:[0,1,2,3,4,5,6,7,8,9],x:[10,22,34,46,58,70,82,94,106,118],          y:[90,91,92,91,90,91,92,91,90,91],          scores:[0.12,0.13,0.14,0.12,0.13,0.14,0.12,0.13,0.14,0.12]},
+  11:{label:'Loiterer 2',        frames:[0,1,2,3,4,5,6,7,8,9],x:[220,221,220,222,221,220,221,222,220,221],  y:[150,150,151,150,151,150,150,151,150,151], scores:[0.40,0.52,0.68,0.77,0.83,0.88,0.85,0.81,0.86,0.90]},
+  12:{label:'Normal walker 4',   frames:[0,1,2,3,4,5,6,7,8,9],x:[90,95,100,105,110,115,120,125,130,135],    y:[40,40,41,41,42,42,43,43,44,44],          scores:[0.08,0.09,0.08,0.10,0.09,0.08,0.09,0.10,0.08,0.09]},
+  13:{label:'Erratic mover',     frames:[0,1,2,3,4,5,6,7,8,9],x:[110,125,100,130,95,135,105,128,98,132],    y:[100,95,108,92,110,90,105,95,108,91],     scores:[0.60,0.68,0.82,0.88,0.91,0.85,0.89,0.93,0.87,0.94]},
+  14:{label:'Normal walker 5',   frames:[0,1,2,3,4,5,6,7,8,9],x:[160,165,170,175,180,185,190,195,200,205],  y:[130,130,131,131,132,132,133,133,134,134], scores:[0.07,0.08,0.07,0.09,0.08,0.07,0.08,0.09,0.07,0.08]},
+  15:{label:'Suspicious lingerer',frames:[0,1,2,3,4,5,6,7,8,9],x:[40,41,40,41,40,42,41,40,41,40],           y:[80,80,81,80,81,80,81,80,80,81],          scores:[0.48,0.57,0.71,0.80,0.86,0.92,0.89,0.87,0.91,0.94]},
+  16:{label:'Normal walker 6',   frames:[0,1,2,3,4,5,6,7,8,9],x:[240,246,252,258,264,270,276,282,288,294],  y:[50,51,51,52,52,53,53,54,54,55],          scores:[0.06,0.07,0.08,0.06,0.07,0.06,0.08,0.07,0.06,0.07]},
+  17:{label:'Slow pacer',        frames:[0,1,2,3,4,5,6,7,8,9],x:[185,190,185,190,185,190,185,190,185,190],  y:[115,115,117,117,115,115,117,117,115,115], scores:[0.35,0.44,0.65,0.74,0.78,0.83,0.80,0.86,0.82,0.87]},
+  18:{label:'Normal walker 7',   frames:[0,1,2,3,4,5,6,7,8,9],x:[120,126,132,138,144,150,156,162,168,174],  y:[160,160,161,161,162,162,163,163,164,164], scores:[0.08,0.09,0.08,0.07,0.09,0.08,0.07,0.09,0.08,0.07]},
+  19:{label:'Crowd lingerer',    frames:[0,1,2,3,4,5,6,7,8,9],x:[75,76,75,77,76,75,76,77,75,76],            y:[55,55,56,55,56,55,56,55,55,56],          scores:[0.52,0.61,0.73,0.82,0.87,0.90,0.88,0.85,0.89,0.93]},
+  20:{label:'Normal walker 8',   frames:[0,1,2,3,4,5,6,7,8,9],x:[300,306,312,318,324,330,336,342,348,354],  y:[90,90,91,91,92,92,93,93,94,94],          scores:[0.06,0.07,0.06,0.08,0.07,0.06,0.07,0.06,0.08,0.07]},
+};
+
+const CK=['clean','motion_blur','gaussian_noise','low_light','compression','all_combined'];
+const CL={clean:'Clean',motion_blur:'Motion Blur',gaussian_noise:'Gaussian Noise',low_light:'Low Light',compression:'Compression',all_combined:'All Combined'};
+
+let state={dataset:'ped2',condition:'clean',person:1,threshold:0.65};
+let charts={};
+
+Chart.defaults.color='#6b7899';
+Chart.defaults.borderColor='#232838';
+Chart.defaults.font.family='DM Sans';
+
+// Populate person dropdown
+const pidSel=document.getElementById('pidSel');
+for(let i=1;i<=20;i++){
+  const o=document.createElement('option');
+  o.value=i; o.textContent=`Person ${i} — ${P[i].label}`;
+  pidSel.appendChild(o);
+}
+pidSel.onchange=function(){state.person=parseInt(this.value);renderAll();};
+
+function dc(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
+function nav(v,el){
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  el.classList.add('active');
+  renders[v]&&renders[v]();
+}
+function renderAll(){const a=document.querySelector('.view.active');if(!a)return;const v=a.id.replace('view-','');renders[v]&&renders[v]();}
+function fd(d){const s=(d>0?'+':'')+d.toFixed(4);const cl=d<-0.01?'dn':d>0.01?'dp':'dz';return`<span class="${cl}">${s}</span>`;}
+function badge(s){if(s>=0.65)return`<span class="badge bh">ALERT</span>`;if(s>=0.35)return`<span class="badge bm">SUSPECT</span>`;return`<span class="badge bl">NORMAL</span>`;}
+function meanScore(pid){return P[pid].scores.reduce((a,b)=>a+b,0)/P[pid].scores.length;}
+
+// ── OVERVIEW ──
+function renderOverview(){
+  const d1=R.ped1,d2=R.ped2;
+  const anomPids=Object.keys(P).filter(pid=>meanScore(parseInt(pid))>=0.65).length;
+  document.getElementById('ovStats').innerHTML=`
+    <div class="stat"><div class="stat-lbl">Ped2 Clean AUC</div><div class="stat-val">${d2.conds.clean.auc.toFixed(4)}</div><div class="stat-sub">2022 test frames</div></div>
+    <div class="stat"><div class="stat-lbl">Ped1 Clean AUC</div><div class="stat-val">${d1.conds.clean.auc.toFixed(4)}</div><div class="stat-sub">7200 test frames</div></div>
+    <div class="stat"><div class="stat-lbl">Persons Tracked</div><div class="stat-val">20</div><div class="stat-sub">${anomPids} flagged anomalous</div></div>
+    <div class="stat"><div class="stat-lbl">Worst Condition</div><div class="stat-val" style="font-size:14px;padding-top:4px">Low Light</div><div class="stat-sub">−${(d2.conds.clean.auc-d2.conds.low_light.auc).toFixed(4)} AUC</div></div>
+  `;
+  dc('ovBar');
+  charts['ovBar']=new Chart(document.getElementById('ovBarChart'),{type:'bar',data:{labels:CK.map(c=>CL[c]),datasets:[{label:'Ped2',data:CK.map(c=>d2.conds[c].auc),backgroundColor:'rgba(79,142,247,0.75)',borderColor:'#4f8ef7',borderWidth:1,borderRadius:4},{label:'Ped1',data:CK.map(c=>d1.conds[c].auc),backgroundColor:'rgba(247,201,72,0.75)',borderColor:'#f7c948',borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#6b7899',font:{size:11}}}},scales:{y:{min:0.4,max:0.8,ticks:{callback:v=>v.toFixed(2)},grid:{color:'#1e2235'}},x:{grid:{color:'#1e2235'},ticks:{font:{size:10}}}}}});
+  dc('delta');
+  const noCl=CK.filter(c=>c!=='clean');
+  charts['delta']=new Chart(document.getElementById('deltaChart'),{type:'bar',data:{labels:noCl.map(c=>CL[c]),datasets:[{label:'Ped2 Δ',data:noCl.map(c=>d2.conds[c].auc-d2.conds.clean.auc),backgroundColor:noCl.map(c=>(d2.conds[c].auc-d2.conds.clean.auc)>=0?'rgba(62,207,142,0.7)':'rgba(224,92,122,0.7)'),borderRadius:4},{label:'Ped1 Δ',data:noCl.map(c=>d1.conds[c].auc-d1.conds.clean.auc),backgroundColor:noCl.map(c=>(d1.conds[c].auc-d1.conds.clean.auc)>=0?'rgba(79,142,247,0.7)':'rgba(247,201,72,0.7)'),borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#6b7899',font:{size:11}}}},scales:{y:{ticks:{callback:v=>(v>=0?'+':'')+v.toFixed(3)},grid:{color:'#1e2235'}},x:{grid:{color:'#1e2235'},ticks:{font:{size:10}}}}}});
+  const t=document.getElementById('crossTable');
+  t.innerHTML=`<thead><tr><th>Condition</th><th>Ped2 AUC</th><th>Ped2 PR</th><th>Ped2 FAR</th><th>Ped1 AUC</th><th>Ped1 PR</th><th>Ped1 FAR</th><th>Δ Ped2</th><th>Δ Ped1</th></tr></thead>`;
+  const tb=document.createElement('tbody');
+  CK.forEach(c=>{const r2=d2.conds[c],r1=d1.conds[c];tb.innerHTML+=`<tr><td style="color:var(--text);font-family:'DM Sans'">${CL[c]}</td><td style="color:var(--accent2)">${r2.auc.toFixed(4)}</td><td>${r2.pr.toFixed(4)}</td><td>${r2.far.toFixed(4)}</td><td style="color:var(--accent)">${r1.auc.toFixed(4)}</td><td>${r1.pr.toFixed(4)}</td><td>${r1.far.toFixed(4)}</td><td>${c==='clean'?'<span class="dz">—</span>':fd(r2.auc-d2.conds.clean.auc)}</td><td>${c==='clean'?'<span class="dz">—</span>':fd(r1.auc-d1.conds.clean.auc)}</td></tr>`;});
+  t.appendChild(tb);
+}
+
+// ── ROBUSTNESS ──
+function renderRobustness(){
+  const ds=R[state.dataset],cond=state.condition,cleanAuc=ds.conds.clean.auc,r=ds.conds[cond];
+  document.getElementById('robDsLbl').textContent=ds.label;
+  document.getElementById('robCondLbl').textContent=CL[cond].toUpperCase();
+  document.getElementById('condPills').innerHTML=CK.map(c=>`<div class="pill ${c===cond?'active':''}" onclick="state.condition='${c}';document.getElementById('condSel').value='${c}';renderRobustness()">${CL[c]}</div>`).join('');
+  const delta=cond==='clean'?0:r.auc-cleanAuc;
+  document.getElementById('robStats').innerHTML=`
+    <div class="stat"><div class="stat-lbl">AUC Score</div><div class="stat-val">${r.auc.toFixed(4)}</div><div class="stat-sub">${CL[cond]}</div></div>
+    <div class="stat"><div class="stat-lbl">PR-AUC</div><div class="stat-val">${r.pr.toFixed(4)}</div><div class="stat-sub">Precision-Recall</div></div>
+    <div class="stat"><div class="stat-lbl">False Alarm Rate</div><div class="stat-val">${r.far.toFixed(4)}</div><div class="stat-sub">FAR</div></div>
+    <div class="stat"><div class="stat-lbl">ΔAUC vs Clean</div><div class="stat-val" style="font-size:17px;color:${delta<-0.01?'var(--accent3)':delta>0.01?'var(--accent4)':'var(--text-dim)'}">${cond==='clean'?'—':(delta>=0?'+':'')+delta.toFixed(4)}</div><div class="stat-sub">Degradation impact</div></div>
+  `;
+  dc('radar');
+  charts['radar']=new Chart(document.getElementById('radarChart'),{type:'radar',data:{labels:CK.map(c=>CL[c]),datasets:[{label:ds.label,data:CK.map(c=>ds.conds[c].auc),backgroundColor:'rgba(79,142,247,0.1)',borderColor:'#4f8ef7',borderWidth:2,pointBackgroundColor:'#4f8ef7',pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0.4,max:0.75,ticks:{stepSize:0.05,backdropColor:'transparent',color:'#3d4560'},grid:{color:'#232838'},angleLines:{color:'#232838'},pointLabels:{color:'#6b7899',font:{size:10}}}},plugins:{legend:{display:false}}}});
+  const t=document.getElementById('robTable');
+  t.innerHTML=`<thead><tr><th>Condition</th><th>AUC</th><th>PR-AUC</th><th>FAR</th><th>ΔAUC</th><th>Status</th></tr></thead>`;
+  const tb=document.createElement('tbody');
+  CK.forEach(c=>{const rc=ds.conds[c],d=c==='clean'?0:rc.auc-cleanAuc;const sc=d<-0.05?'var(--accent3)':d<-0.02?'var(--accent)':'var(--accent4)';const sl=d<-0.05?'DEGRADED':d<-0.02?'REDUCED':'STABLE';tb.innerHTML+=`<tr style="${c===cond?'background:rgba(79,142,247,0.05)':''}"><td style="color:var(--text);font-family:'DM Sans'">${CL[c]}</td><td style="color:var(--accent2)">${rc.auc.toFixed(4)}</td><td>${rc.pr.toFixed(4)}</td><td>${rc.far.toFixed(4)}</td><td>${c==='clean'?'<span class="dz">baseline</span>':fd(d)}</td><td><span class="badge" style="color:${sc};background:${sc}1a;border:1px solid ${sc}33">${c==='clean'?'BASELINE':sl}</span></td></tr>`;});
+  t.appendChild(tb);
+}
+
+// ── CLIPS ──
+function renderClips(){
+  const ds=R[state.dataset];
+  document.getElementById('clipDsBadge').textContent=state.dataset.toUpperCase();
+  const max=Math.max(...ds.clips.map(c=>c.score));
+  dc('clip');
+  charts['clip']=new Chart(document.getElementById('clipChart'),{type:'bar',data:{labels:ds.clips.map(c=>c.id),datasets:[{label:'Fusion Score',data:ds.clips.map(c=>c.score),backgroundColor:ds.clips.map(c=>c.score===max?'rgba(224,92,122,0.8)':c.score>0.180?'rgba(247,201,72,0.75)':'rgba(79,142,247,0.7)'),borderRadius:4,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`Score: ${ctx.raw.toFixed(4)}  LSTM seqs: ${ds.clips[ctx.dataIndex].seqs}`}}},scales:{y:{min:0.10,ticks:{callback:v=>v.toFixed(3)},grid:{color:'#1e2235'},title:{display:true,text:'Fusion Score',color:'#6b7899'}},x:{grid:{color:'#1a1e28'},ticks:{font:{size:9},maxRotation:45}}}}});
+  const t=document.getElementById('clipTable');
+  t.innerHTML=`<thead><tr><th>#</th><th>Clip</th><th>Fusion Score</th><th>LSTM Seqs</th><th>Alert</th></tr></thead>`;
+  const tb=document.createElement('tbody');
+  ds.clips.forEach((c,i)=>{const col=c.score>0.185?'var(--accent3)':c.score>0.175?'var(--accent)':'var(--accent2)';tb.innerHTML+=`<tr><td>${i+1}</td><td style="color:var(--text);font-family:'DM Sans'">${c.id}</td><td style="color:${col}">${c.score.toFixed(4)}</td><td>${c.seqs}</td><td>${badge(c.score)}</td></tr>`;});
+  t.appendChild(tb);
+}
+
+// ── TRAJECTORY ──
+function renderTrajectory(){
+  const p=P[state.person];
+  document.getElementById('trajPid').textContent=`${state.person} — ${p.label}`;
+  dc('xy');
+  charts['xy']=new Chart(document.getElementById('xyChart'),{type:'line',data:{datasets:[{label:'Path',data:p.x.map((x,i)=>({x,y:p.y[i]})),borderColor:'#8b5cf6',backgroundColor:'rgba(139,92,246,0.06)',pointBackgroundColor:p.scores.map(s=>s>=state.threshold?'#e05c7a':'#4f8ef7'),pointRadius:6,borderWidth:2,tension:0.3,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`X:${ctx.parsed.x} Y:${ctx.parsed.y} Score:${p.scores[ctx.dataIndex].toFixed(2)}`}}},scales:{x:{type:'linear',title:{display:true,text:'X',color:'#6b7899'},grid:{color:'#232838'}},y:{title:{display:true,text:'Y',color:'#6b7899'},grid:{color:'#232838'}}}}});
+  dc('ypos');
+  charts['ypos']=new Chart(document.getElementById('yChart'),{type:'line',data:{labels:p.frames,datasets:[{label:'Y',data:p.y,borderColor:'#4f8ef7',backgroundColor:'rgba(79,142,247,0.07)',borderWidth:2,pointRadius:4,tension:0.3,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{title:{display:true,text:'Frame',color:'#6b7899'},grid:{color:'#232838'}},y:{title:{display:true,text:'Y Position',color:'#6b7899'},grid:{color:'#232838'}}}}});
+
+  // 20-person heatmap
+  const pids=Array.from({length:20},(_,i)=>i+1);
+  const wins=['W0','W1','W2','W3','W4','W5','W6','W7','W8','W9'];
+  const cw=46,ch=32;
+  let h=`<div style="display:flex;gap:3px;align-items:flex-start">`;
+  // y labels
+  h+=`<div style="display:flex;flex-direction:column;gap:3px;margin-top:22px">`;
+  pids.forEach(pid=>{h+=`<div style="height:${ch}px;display:flex;align-items:center;padding-right:8px;font-family:'Space Mono',monospace;font-size:9px;color:var(--text-dim);white-space:nowrap">P${pid}</div>`;});
+  h+=`</div><div>`;
+  // x labels
+  h+=`<div style="display:flex;gap:3px;margin-bottom:4px">`;
+  wins.forEach(w=>{h+=`<div style="width:${cw}px;text-align:center;font-size:9px;color:var(--text-dim);font-family:'Space Mono',monospace">${w}</div>`;});
+  h+=`</div>`;
+  // rows
+  pids.forEach(pid=>{
+    h+=`<div style="display:flex;gap:3px;margin-bottom:3px">`;
+    P[pid].scores.forEach((s,wi)=>{
+      const a=0.15+s*0.85;
+      const rv=s>=0.8?224:s>=0.5?247:79,gv=s>=0.8?92:s>=0.5?201:142,bv=s>=0.8?122:s>=0.5?72:247;
+      const tc=s>0.5?'#fff':'#6b7899';
+      const isSelected=pid===state.person?'outline:2px solid var(--accent);':'';
+      h+=`<div style="width:${cw}px;height:${ch}px;border-radius:3px;background:rgba(${rv},${gv},${bv},${a});display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:8px;color:${tc};cursor:pointer;${isSelected}" title="P${pid} (${P[pid].label}) W${wi}: ${s.toFixed(2)}" onclick="state.person=${pid};document.getElementById('pidSel').value=${pid};renderTrajectory()">${s.toFixed(2)}</div>`;
+    });
+    h+=`</div>`;
+  });
+  h+=`</div></div>`;
+  // legend
+  h+=`<div style="display:flex;align-items:center;gap:10px;margin-top:12px;padding-left:36px"><span style="font-size:10px;color:var(--text-dimmer);font-family:'Space Mono',monospace">Score:</span>`;
+  [0,0.25,0.5,0.75,1.0].forEach(v=>{const a=0.15+v*0.85,rv=v>=0.8?224:v>=0.5?247:79,gv=v>=0.8?92:v>=0.5?201:142,bv=v>=0.8?122:v>=0.5?72:247;h+=`<div style="display:flex;align-items:center;gap:5px"><div style="width:18px;height:12px;border-radius:3px;background:rgba(${rv},${gv},${bv},${a})"></div><span style="font-size:9px;color:var(--text-dim);font-family:'Space Mono',monospace">${v.toFixed(2)}</span></div>`;});
+  h+=`</div><div style="margin-top:6px;padding-left:36px;font-size:10px;color:var(--text-dimmer);font-family:'Space Mono',monospace">Click any cell to jump to that person</div>`;
+  document.getElementById('hmContainer').innerHTML=h;
+}
+
+// ── TIMELINE ──
+function renderTimeline(){
+  const p=P[state.person],thr=state.threshold;
+  document.getElementById('tlPid').textContent=`${state.person} — ${p.label}`;
+  document.getElementById('tlThrBadge').textContent=`THR ${thr.toFixed(2)}`;
+  dc('tl');
+  charts['tl']=new Chart(document.getElementById('tlChart'),{type:'line',data:{labels:p.frames,datasets:[{label:'Anomaly Score',data:p.scores,borderColor:'#4f8ef7',backgroundColor:(ctx)=>{const ch=ctx.chart,{ctx:c,chartArea}=ch;if(!chartArea)return'transparent';const g=c.createLinearGradient(0,chartArea.top,0,chartArea.bottom);g.addColorStop(0,'rgba(79,142,247,0.2)');g.addColorStop(1,'rgba(79,142,247,0.01)');return g;},pointBackgroundColor:p.scores.map(s=>s>=thr?'#e05c7a':'#4f8ef7'),pointBorderColor:p.scores.map(s=>s>=thr?'rgba(224,92,122,0.3)':'rgba(79,142,247,0.3)'),pointBorderWidth:3,pointRadius:7,borderWidth:2.5,tension:0.4,fill:true},{label:`Threshold (${thr.toFixed(2)})`,data:p.frames.map(()=>thr),borderColor:'rgba(224,92,122,0.6)',borderDash:[8,5],borderWidth:2,pointRadius:0,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#6b7899',font:{size:11}}},tooltip:{callbacks:{label:ctx=>{const s=ctx.raw;return[` Score: ${s.toFixed(4)}`,' Status: '+(s>=thr?'⚠ ANOMALY':'✓ NORMAL')];},},},},scales:{x:{title:{display:true,text:'Frame',color:'#6b7899'},grid:{color:'#1e2235'}},y:{min:0,max:1.05,title:{display:true,text:'Anomaly Score',color:'#6b7899'},grid:{color:'#1e2235'},ticks:{callback:v=>v.toFixed(1)}}}}});
+  const t=document.getElementById('detTable');
+  t.innerHTML=`<thead><tr><th>#</th><th>Frame</th><th>Score</th><th>Threshold</th><th>Δ</th><th>Status</th></tr></thead>`;
+  const tb=document.createElement('tbody');
+  p.frames.forEach((f,i)=>{const s=p.scores[i],d=s-thr;tb.innerHTML+=`<tr style="${s>=thr?'background:rgba(224,92,122,0.04)':''}"><td>${i+1}</td><td>${f}</td><td style="color:${s>=thr?'var(--accent3)':'var(--accent2)'}">${s.toFixed(4)}</td><td>${thr.toFixed(2)}</td><td>${fd(d)}</td><td>${badge(s)}</td></tr>`;});
+  t.appendChild(tb);
+}
+
+// ── THRESHOLD SYNC (slider ↔ input ↔ presets) ──
+function syncThreshold(val, source) {
+  let v = parseFloat(val);
+  if (isNaN(v)) return;
+  v = Math.min(1, Math.max(0, v));
+  const rounded = Math.round(v * 100) / 100;
+  state.threshold = rounded;
+  if (source !== 'slider') document.getElementById('thrSlider').value = rounded;
+  if (source !== 'input')  document.getElementById('thrInput').value  = rounded.toFixed(2);
+  // Highlight matching preset
+  document.querySelectorAll('.thr-preset').forEach(el => {
+    el.style.borderColor = parseFloat(el.dataset.val) === rounded ? 'var(--accent)' : 'var(--border2)';
+    el.style.color       = parseFloat(el.dataset.val) === rounded ? 'var(--accent)' : 'var(--text-dim)';
+  });
+  renderAll();
+}
+
+// ── PDF EXPORT ──
+async function exportPDF() {
+  const btn = document.getElementById('exportBtn');
+  const spinner = document.getElementById('exportSpinner');
+  const label = document.getElementById('exportLabel');
+  btn.disabled = true;
+  spinner.style.display = 'block';
+  label.textContent = 'Generating…';
+
+  try {
+    const activeView = document.querySelector('.view.active');
+    const viewName = activeView.id.replace('view-','');
+    const canvas = await html2canvas(activeView, {
+      backgroundColor: '#0d0f14',
+      scale: 2,
+      useCORS: true,
+      logging: false,
+    });
+
+    const { jsPDF } = window.jspdf;
+    const imgData = canvas.toDataURL('image/png');
+    const imgW = canvas.width;
+    const imgH = canvas.height;
+    const pdfW = 297; // A4 landscape mm
+    const pdfH = Math.round((imgH / imgW) * pdfW);
+    const orientation = imgW > imgH ? 'landscape' : 'portrait';
+    const pdf = new jsPDF({ orientation, unit: 'mm', format: 'a4' });
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    const ratio = Math.min(pageW / imgW, pageH / imgH);
+    const finalW = imgW * ratio;
+    const finalH = imgH * ratio;
+    const xOff = (pageW - finalW) / 2;
+    const yOff = (pageH - finalH) / 2;
+
+    // Dark background fill
+    pdf.setFillColor(13, 15, 20);
+    pdf.rect(0, 0, pageW, pageH, 'F');
+    pdf.addImage(imgData, 'PNG', xOff, yOff, finalW, finalH);
+
+    // Footer
+    pdf.setFontSize(7);
+    pdf.setTextColor(100, 110, 130);
+    pdf.text(`CCTV Anomaly Detection Dashboard — ${viewName.toUpperCase()} view  ·  Dataset: ${state.dataset.toUpperCase()}  ·  ${new Date().toLocaleDateString()}`, pageW/2, pageH - 4, {align:'center'});
+
+    pdf.save(`cctv_anomaly_${viewName}_${state.dataset}_${Date.now()}.pdf`);
+  } catch(e) {
+    console.error('PDF export failed:', e);
+    alert('PDF export failed. See console for details.');
+  } finally {
+    btn.disabled = false;
+    spinner.style.display = 'none';
+    label.textContent = '⬇ Export View as PDF';
+  }
+}
+
+const renders={overview:renderOverview,robustness:renderRobustness,clips:renderClips,trajectory:renderTrajectory,timeline:renderTimeline};
+renderOverview();
+</script>
+</body>
+</html>
