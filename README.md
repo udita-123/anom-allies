@@ -2,6 +2,10 @@
 
 > Research-grade computer vision system for detecting long-duration low-motion suspicious behaviour (loitering, pacing, wandering) in synthetically degraded CCTV footage.
 
+
+https://udita-123.github.io/anom-allies/
+
+
 ---
 
 ## Team — Anom Allies
